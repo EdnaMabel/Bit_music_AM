@@ -11,7 +11,7 @@ const app = express(); // Application Express
 
 // Configurar las rutas de acceso a cada función de nuestra aplicación
 const usuarioRutas = require('./rutas/usuarioRutas');
-
+const cancionRutas = require('./rutas/cancionRutas');
 // Analizar los datos que se están enviando por la URL con body-parser
 app.use(bodyParser.json());
 
@@ -21,4 +21,5 @@ app.use(bodyParser.json());
 // Consumo de las rutas
 app.use('/api', usuarioRutas); // acá estamos usando todas las rutas del usuario que activan las funciones
 // /api/registro
+app.use('/api', cancionRutas);
 module.exports = app; // Exportamos todo el archivo app

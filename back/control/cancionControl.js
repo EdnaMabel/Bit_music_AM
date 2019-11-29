@@ -38,11 +38,11 @@ function buscarCancion(req, res) {
     var parametros = req.body;
 
     var tituloCancion = parametros.titulo;
-    var generoCancion = parametros.genero;
-    var artistaCancion = parametros.artista;
+    //var generoCancion = parametros.genero;
+    //var artistaCancion = parametros.artista;
     
 
-    Cancion.findOne({titulo: tituloCancion.toLowerCase()},(err,cancionCreada)=>{
+    Cancion.findOne({titulo: tituloCancion.toLowerCase()},(err,cancionEncontrada)=>{
         if (err) {
             res.status(500).send({
                 message: "Error en el servidor"
@@ -50,13 +50,13 @@ function buscarCancion(req, res) {
             });
 
         } else {
-            if (!cancionCreada) {
+            if (!cancionEncontrada) {
                 res.status(404).send({
                     message: "Canción no encontrada"
                 });
             } else {
                 res.status(200).send({
-                    cancion: cancionCreada
+                    cancion: cancionEncontrada
                 });
             }
         }
@@ -65,13 +65,13 @@ function buscarCancion(req, res) {
 
 }
 
-function buscarTodasCanciones(req, res) {
+function buscarGenero(req, res) {
     var parametros = req.body;
 
-    var tituloCanciones = parametros.titulo;
+    var generoCanciones = parametros.genero;
     
 
-    Canciones.findOne({titulo: tituloCanciones.toLowerCase()},(err,cancionesCreadas)=>{
+    Cancion.find({genero: generoCanciones.toLowerCase()},(err,cancionesEncontradas)=>{
         if (err) {
             res.status(500).send({
                 message: "Error en el servidor"
@@ -79,13 +79,13 @@ function buscarTodasCanciones(req, res) {
             });
 
         } else {
-            if (!cancionesCreadas) {
+            if (!cancionesEncontradas) {
                 res.status(404).send({
                     message: "Canciones no encontradas"
                 });
             } else {
                 res.status(200).send({
-                    canciones: cancionesCreadas
+                    canciones: cancionesEncontradas
                 });
             }
         }
@@ -95,12 +95,14 @@ function buscarTodasCanciones(req, res) {
 }
 
 function actualizarCancion(req, res) {
-    var parametros = req.body;
 
-    var actualizarCancion = parametros.actualizar;
+    var cancionId = req.params.id;
+    var actualizarCancion = req.body;
+
+
     
 
-    Cancion.findOne({actualizar: actualizarCancion.toLowerCase()},(err,cancionActualizada)=>{
+    Cancion.findByIdAndUpdate(cancionId, actualizarCancion,(err,cancionActualizada)=>{
         if (err) {
             res.status(500).send({
                 message: "Error en el servidor"
@@ -114,7 +116,7 @@ function actualizarCancion(req, res) {
                 });
             } else {
                 res.status(200).send({
-                    cancion: cancionesActualizada
+                    cancion: cancionActualizada
                 });
             }
         }
@@ -124,12 +126,10 @@ function actualizarCancion(req, res) {
 }
 
 function eliminarCancion(req, res) {
-    var parametros = req.body;
-
-    var eliminarCancion = parametros.eliminar;
+    var cancionId = req.params.id;
     
 
-    Cancion.findOne({eliminar: eliminarCancion.toLowerCase()},(err,cancionEliminada)=>{
+    Cancion.findByIdAndDelete(cancionId,(err,cancionEliminada)=>{
         if (err) {
             res.status(500).send({
                 message: "Error en el servidor"
@@ -143,7 +143,7 @@ function eliminarCancion(req, res) {
                 });
             } else {
                 res.status(200).send({
-                    cancion: cancionesEliminada
+                    cancion: cancionEliminada
                 });
             }
         }
@@ -160,7 +160,7 @@ function eliminarCancion(req, res) {
 module.exports = {
     crearCancion,
     buscarCancion,
-    buscarTodasCanciones,
+    buscarGenero,
     actualizarCancion,
     eliminarCancion
 

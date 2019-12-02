@@ -1,5 +1,11 @@
 // Importando el modelo usuario para interactuar con el
 const Usuario = require('../modelo/usuario');
+//Modulo interno del nucleo de Node. File System->leer los archivos externos
+
+const fs = require('fs');
+//Modulo de path _interno de Node->evaluar y analizar la ruta de un archivo o de un parametro 
+//localhost:4000/api/subir-imagen/:id --/archivos/usuarios/icon.jpg
+const path = require('path');
 
 // req - request - peticion / res - response - respuesta
 function crearUsuario(req, res){
@@ -97,8 +103,118 @@ function actualizarUsuario(req, res){
     });
 } 
 
+//nueva linea de codigo -> funcion subir imagen
+function subirImg(req, res){
+ var usuarioId = req.params.id;
+ var nombreArchivo = "No ha subido nada..";
+
+
+ //re.files -> el campo o propiedad files de
+ // la peticion  guarda los archivos que el usuario esta enviando
+ if(req.files){
+     // var rutaArchivo =imagen: /archivos/usuarios/mi-imagen.jpg
+     var rutaArchivo = req.files.imagen.path;
+     console.log(rutaArchivo);
+      
+
+     //bit.jpg -> split(.)=['bit','jpg']
+     //ctrl + alt +? -> colocar backslashe \\
+     //altgr +|
+     var partirArchivo = rutaArchivo.split('\\'); //permite partir una cadena desde un caracter
+     console.log('variable partirArchivo: ' + partirArchivo);
+
+     var nombreArchivo = partirArchivo[2];
+     console.log('variable nombreArchivo: ' + nombreArchivo);
+
+
+     var extensionImg = nombreArchivo.split('\.');//['mi-imagen', 'jpg']
+     console.log('variable extensionImg:' + extensionImg);
+
+     var extensionArchivo =extensionImg[1];//->.jpg
+       console.log('variable extensionArchivo: '+ extensionArchivo);
+       
+       
+       //validamos si el archivo es de un formato de imagen valido como png o jpg
+    //1 verdadera o la segunda es falsa el resultado es verdadero, por que se cumple una de las dos condiciones.
+       // si la primera y segunda es verdadera  inrgesara
+       // si las primera y segunda condicion no se cumple  entonces  el resultado sera falso.  
+/*
+a traves de una expresion regular podemos validar si dentro de un acadenas
+existe algun caracter en especifico. En este ejemplo validamos si al final 
+de la cadena existe los caracteres jpg, png, gif, jpeg
+Abrimos  una expresion regular con /patron/
+ ^ - con el sombrerito indicamos que una cadena empiece  por x caracter
+ ej: /^bar/--barco /bar/--barra
+ $ con el signo dolar indicamos que una cadena termina  en x caracter
+ ej:/ar$/--mar/programar
+
+       var validarExtension = /\.(png|jpg|gif|jpeg)$/
+       if(extensionArchivo.match(validarExtension)){
+           usuario.find...etc
+       }
+*/
+
+    if(extensionArchivo == 'png' || extensionArchivo =='jpg'){
+       Usuario.findByIdAndUpdate(usuarioId,{imagen: nombreArchivo},(err, imgUsuario)=>{
+           if(err){
+               res.status(500).send({
+                   message: "Error en el servidor"
+               });
+           }else{
+               if(!imgUsuario){
+                   res.status(404).send({
+                       message: "No se pudo subir la imagen"
+                   });
+               }else{
+                   res.status(200).send({
+                       imagen: nombreArchivo,
+                       usuario: imgUsuario
+                   });
+               }
+
+           }
+       });
+       }else{
+           res.status(404).send({
+               message: "Archivo inválido!- no es una imagen"
+           });
+       }
+
+
+ }else{
+     res.status(404).send({
+         message: "No ha subido ninguna imagen"
+     });
+
+ }
+}
+
+function mostrarArchivo(req,res){
+    //guardamos el nombre del archivo que estamos enviando en la url
+    var archivo = req.params.imageFile; //req.params.id
+    //varificamos la carpeta archivos/usuarios para encontrar el archivo
+    var rutaArchivo = './archivos/usuarios'+archivo;
+
+    //validamos si dentro de la cartepa archivos/usuarios existe el archivo
+    //fs.exist('en donde quiere buscar'(existe o no)=>{})
+    fs.exists(rutaArchivo, (exists)=>{
+        if(exists){
+            //sendFile ->propio del modulo FS
+            //Aca enviamos la imagen o el archivo como respuesta
+            res.sendFile(path.resolve(rutaArchivo));
+        }else{
+            res.status(404).send({
+                message: "No existe la imagen"
+            });
+        }
+
+    });
+
+}
 module.exports = {
     crearUsuario,
     login,
-    actualizarUsuario
+    actualizarUsuario,
+    subirImg,
+    mostrarArchivo
 };

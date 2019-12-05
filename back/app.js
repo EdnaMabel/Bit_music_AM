@@ -22,9 +22,9 @@ app.use((req, res, next)=>{
     //Estos permisos deriban de AJAX (Asynchronous JavaScript, XHML)
 
     //Todos los dominios
-    res.header('Access-Control -Allow-Origin', '*');
+    res.header('Access-Control-Allow-Origin', '*');
     //Todos los metadatos- cookies
-    res.header('Access-Control -Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-with, Content-type, Accept, Access-Control-Allow-Request-Method');
+    res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-with, Content-type, Accept, Access-Control-Allow-Request-Method');
     // Todos los metodos http: metodos de  peticion
     res.header('Access-Control-Allow-Methods', 'GET,POST, PUT, DELETE, OPTIONS');
     //Configuracion estricta de los metodos a  utilizar
